@@ -12,7 +12,7 @@ class KomentarSeeder extends Seeder
             [
                 'id_user' => 2,
                 'id_artikel' => 1,
-                'isi_komentar' => 'Artikel yang menarik!',
+                'isi_komentar' => 'sangat bagus',
                 'created_at' => date('Y-m-d H:i:s'),
             ],
         ];
