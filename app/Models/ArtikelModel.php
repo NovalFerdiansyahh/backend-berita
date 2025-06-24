@@ -14,7 +14,7 @@ class ArtikelModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'id_user', 'judul', 'isi', 'gambar', 'created_at', 'updated_at'
+        'id_user','id_kategori', 'judul', 'isi', 'gambar','model', 'created_at', 'updated_at'
     ];
 
     // Dates
@@ -66,7 +66,6 @@ class ArtikelModel extends Model
                     ->findAll();
     }
 
-    // Ambil artikel paling banyak dilihat
     public function getTrending($limit = 5)
     {
         return $this->orderBy('dilihat', 'DESC')

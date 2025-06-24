@@ -70,4 +70,29 @@ class User extends ResourceController
             return $this->respondDeleted("Data dengan id $id berhasil dihapus");
         }
     }
+
+    public function register()
+    {
+        $json = $this->request->getJSON();
+
+        if (!$json) {
+            return $this->failValidationError('Data JSON tidak valid');
+        }
+
+        $data = [
+            'nama'        => $json->nama,
+            'email'       => $json->email,
+            'no_telepon'  => $json->no_telepon,
+            'password'    => $json->password, // ganti hash() jika mau pakai enkripsi
+            'role'        => $json->role,
+        ];
+
+        // Validasi sederhana
+        if (empty($data['nama']) || empty($data['email']) || empty($data['password'])) {
+            return $this->fail('Semua field harus diisi', 400);
+        }
+
+        $this->model->insert($data);
+        return $this->respondCreated(['message' => 'User berhasil terdaftar']);
+    }
 }

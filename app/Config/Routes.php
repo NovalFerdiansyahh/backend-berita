@@ -7,6 +7,11 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('api/berita', 'Home::getBerita');
 $routes->get('api/artikel/(:num)', 'Artikel::show/$1');
+$routes->get('api/artikel/search', 'Artikel::search');
+$routes->post('api/artikel/tambahDilihat/(:num)', 'Artikel::tambahDilihat/$1');
+$routes->post('api/user/register', 'User::register');
+$routes->get('api/artikel/kategori/(:num)', 'Artikel::byKategori/$1');
+
 
 
 $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
