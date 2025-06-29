@@ -26,17 +26,28 @@ class Komentar extends ResourceController
 
     public function create()
     {
-        $data = $this->request->getPost();
-        $komentar = new \App\Entities\Komentar();
-        $komentar->fill($data);
+        $data = $this->request->getJSON(true); // Ambil input
 
-        if (!$this->validate($this->model->validationRules, $this->model->validationMessages)) {
-            return $this->fail($this->validator->getErrors());
+        if (!$data || empty($data['id_user']) || empty($data['id_artikel']) || empty($data['isi_komentar'])) {
+            return $this->fail('Data tidak lengkap', 400);
         }
 
-        if ($this->model->save($komentar)) {
-            return $this->respondCreated($data);
+        if ($this->model->insert($data)) {
+            return $this->respond(['status' => 'success']);
+        } else {
+            return $this->failServerError('Gagal menyimpan komentar');
         }
+    }
+
+    public function getKomentarByArtikel($id)
+    {
+        $komentar = $this->model
+            ->where('id_artikel', $id)
+            ->join('tb_users', 'tb_users.id_user = tb_komentar.id_user')
+            ->select('tb_komentar.*, tb_users.nama')
+            ->findAll();
+
+        return $this->respond($komentar);
     }
 
     public function update($id = null)
