@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 use App\Models\ArtikelModel;
+use App\Models\NotifikasiModel;
+use App\Models\UserModel;
 
 use CodeIgniter\RESTful\ResourceController;
 
@@ -41,7 +43,6 @@ class Artikel extends ResourceController
             'isi'         => $this->request->getPost('isi'),
         ];
 
-        // Debug sementara
         log_message('debug', 'Data dari request: ' . json_encode($data));
 
         // Handle upload gambar
@@ -54,26 +55,42 @@ class Artikel extends ResourceController
 
         $artikel = new \App\Entities\Artikel();
         $artikel->fill($data);
+
         if (!$this->validate($this->model->validationRules, $this->model->validationMessages)) {
             return $this->fail($this->validator->getErrors());
         }
 
         if ($this->model->save($artikel)) {
-            $notifModel = new \App\Models\NotifikasiModel();
-            $notifModel->save([
-                'id_artikel' => $this->model->getInsertID(),
-                'judul'      => $data['judul'],
-                'created_at' => date('Y-m-d H:i:s'),
-            ]);
+            // Ambil ID artikel yang baru dibuat
+            $idArtikel = $this->model->getInsertID();
 
-            return $this->respondCreated($data);
+            // Ambil semua user
+            $userModel = new \App\Models\UserModel(); // pastikan model UserModel ada
+            $users = $userModel->findAll();
+
+            // Kirim notifikasi ke semua user
+            $notifModel = new \App\Models\NotifikasiModel();
+            foreach ($users as $user) {
+                $notifModel->save([
+                    'id_user'   => $user->id_user, // pastikan kolom ini ada
+                    'id_artikel' => $idArtikel,
+                    'judul'     => 'Artikel Baru!',
+                    'pesan'     => 'Ada artikel baru berjudul "' . $data['judul'] . '"',
+                    'dibaca'    => '0',
+                    'created_at'=> date('Y-m-d H:i:s')
+                ]);
+            }
+
+            return $this->respondCreated([
+                'status' => 201,
+                'message' => 'Artikel berhasil disimpan dan notifikasi dikirim ke semua user.',
+                'data' => $data
+            ]);
         }
 
-        // Jika gagal simpan artikel
-        return $this->failServerError('Gagal menyimpan data');
-
-
+        return $this->failServerError('Gagal menyimpan artikel.');
     }
+
 
 
     public function update($id = null)
@@ -178,5 +195,33 @@ class Artikel extends ResourceController
         }
     }
 
+    public function simpan()
+{
+    // Simpan artikel
+    $artikelModel = new \App\Models\ArtikelModel();
+    $data = [
+        'judul' => $this->request->getPost('judul'),
+        'konten' => $this->request->getPost('konten'),
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    $artikelModel->insert($data);
 
+    // Ambil semua user
+    $userModel = new UserModel();
+    $users = $userModel->findAll();
+
+    // Kirim notifikasi ke semua user
+    $notifikasiModel = new NotifikasiModel();
+    foreach ($users as $user) {
+        $notifikasiModel->insert([
+            'id_user' => $user['id_user'],
+            'judul' => 'Artikel Baru!',
+            'pesan' => 'Ada artikel baru: ' . $data['judul'],
+            'dibaca' => 0,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    return redirect()->to('/admin/artikel')->with('success', 'Artikel dan notifikasi berhasil ditambahkan.');
+}
 }

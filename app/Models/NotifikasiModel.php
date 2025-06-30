@@ -60,4 +60,10 @@ class NotifikasiModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getJumlahBelumDibaca($idUser)
+{
+    return $this->where(['id_user' => $idUser, 'dibaca' => 0])->countAllResults();
+}
+
 }

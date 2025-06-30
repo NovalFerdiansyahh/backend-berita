@@ -11,8 +11,10 @@ $routes->get('api/artikel/search', 'Artikel::search');
 $routes->post('api/artikel/tambahDilihat/(:num)', 'Artikel::tambahDilihat/$1');
 $routes->post('api/user/register', 'User::register');
 $routes->get('api/artikel/kategori/(:num)', 'Artikel::byKategori/$1');
-
-
+$routes->get('/api/notifikasi/user/(:num)', 'Notifikasi::getByUser/$1');
+$routes->put('/api/notifikasi/baca/(:num)', 'Notifikasi::tandaiSudahDibaca/$1');
+$routes->delete('/api/notifikasi/hapus/(:num)', 'Notifikasi::hapusSemua/$1');
+$routes->get('api/notifikasi/unread/(:num)', 'Notifikasi::jumlahBelumDibaca/$1');
 
 $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->resource('user');   
