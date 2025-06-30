@@ -11,9 +11,23 @@ class Favorit extends ResourceController
 
     public function index()
     {
-        return $this->respond($this->model->findAll());
-    }
+        $db = \Config\Database::connect();
+        $builder = $db->table('tb_favorit');
 
+        $builder->select('
+            tb_favorit.*,
+            tb_artikel.judul,
+            tb_artikel.gambar,
+            tb_users.nama AS sumber
+        ');
+        $builder->join('tb_artikel', 'tb_artikel.id_artikel = tb_favorit.id_artikel');
+        $builder->join('tb_users', 'tb_users.id_user = tb_artikel.id_user');
+
+        $query = $builder->get();
+        $results = $query->getResultArray();
+
+        return $this->response->setJSON($results);
+    }
     public function show($id = null)
     {
         $favorit = $this->model->find($id);
@@ -70,4 +84,29 @@ class Favorit extends ResourceController
             return $this->respondDeleted("Favorit dengan id $id berhasil dihapus");
         }
     }
+    public function simpan()
+{
+    $json = $this->request->getJSON();
+
+    if (!isset($json->id_user) || !isset($json->id_artikel)) {
+        return $this->response->setJSON([
+            'status' => false,
+            'message' => 'Data tidak lengkap'
+        ])->setStatusCode(400);
+    }
+
+    $data = [
+        'id_user'    => $json->id_user,
+        'id_artikel' => $json->id_artikel,
+    ];
+
+    $favoritModel = new \App\Models\FavoritModel();
+    if ($favoritModel->insert($data)) {
+        return $this->response->setJSON(['status' => true, 'message' => 'Berhasil disimpan']);
+    } else {
+        return $this->response->setJSON(['status' => false, 'message' => 'Gagal menyimpan']);
+    }
+}
+
+
 }

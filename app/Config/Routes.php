@@ -16,6 +16,11 @@ $routes->put('/api/notifikasi/baca/(:num)', 'Notifikasi::tandaiSudahDibaca/$1');
 $routes->delete('/api/notifikasi/hapus/(:num)', 'Notifikasi::hapusSemua/$1');
 $routes->get('api/notifikasi/unread/(:num)', 'Notifikasi::jumlahBelumDibaca/$1');
 
+$routes->post('api/favorit', 'Favorit::simpan');
+$routes->post('api/komentar', 'Komentar::create');
+$routes->get('api/komentar/artikel/(:num)', 'Komentar::getKomentarByArtikel/$1');
+
+
 $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->resource('user');   
     $routes->resource('artikel');
