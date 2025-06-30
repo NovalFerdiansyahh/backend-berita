@@ -27,9 +27,13 @@ class UserModel extends Model
 
     // Validation
     protected $validationRules      = [
+        'id_user'       => 'permit_empty|numeric',
         'nama' => 'required|min_length[3]',
         'email' => 'required|valid_email|is_unique[tb_users.email,id_user,{id_user}]',
         'password' => 'required|min_length[6]',
+        'password'      => 'permit_empty|min_length[6]',
+        'tanggal_lahir' => 'required|valid_date',
+        'no_telepon'    => 'required|min_length[8]',
     ];
     
     protected $validationMessages   = [
@@ -42,10 +46,7 @@ class UserModel extends Model
             'valid_email' => 'Email tidak valid',
             'is_unique' => 'Email sudah terdaftar',
         ],
-        'password' => [
-            'required' => 'Password wajib diisi',
-            'min_length' => 'Password minimal 6 karakter',
-        ],
+
     ];
 
     protected $skipValidation       = false;

@@ -20,6 +20,8 @@ $routes->post('api/favorit', 'Favorit::simpan');
 $routes->post('api/komentar', 'Komentar::create');
 $routes->get('api/komentar/artikel/(:num)', 'Komentar::getKomentarByArtikel/$1');
 
+$routes->post('api/user/upload/(:num)', 'User::uploadFoto/$1');
+
 
 $routes->group('api', ['namespace' => 'App\Controllers'], function($routes) {
     $routes->resource('user');   
